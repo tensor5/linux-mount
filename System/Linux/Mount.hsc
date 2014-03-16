@@ -35,16 +35,16 @@ mount :: String        -- ^ Device file
       -> DriverData    -- ^ Driver specific options
       -> IO ()
 mount dev dir typ xs byt =
-    throwErrnoIfMinus1_ "mount" $ do
-      withCString dev $ \cdev ->
-          withCString dir $ \cdir ->
-              withCString typ $ \ctyp ->
-                  useAsCString byt $ \cdat-> 
-                               c_mount cdev
-                                       cdir
-                                       ctyp
-                                       (combineBitMasks xs)
-                                       (castPtr cdat)
+    throwErrnoIfMinus1_ "mount" $
+    withCString dev $ \cdev ->
+        withCString dir $ \cdir ->
+            withCString typ $ \ctyp ->
+                useAsCString byt $ \cdat-> 
+                             c_mount cdev
+                                     cdir
+                                     ctyp
+                                     (combineBitMasks xs)
+                                     (castPtr cdat)
 
 foreign import ccall unsafe "mount"
   c_mount :: Ptr CChar -> Ptr CChar -> Ptr CChar -> CULong -> Ptr a -> IO CInt
@@ -52,8 +52,7 @@ foreign import ccall unsafe "mount"
 -- | Unmount a filesystem (call to @umount()@).
 umount :: FilePath -- ^ Mount point
        -> IO ()
-umount str = throwErrnoIfMinus1_ "umount"
-             (withCString str (\cstr -> (c_umount cstr)))
+umount str = throwErrnoIfMinus1_ "umount" (withCString str c_umount)
 
 foreign import ccall unsafe "umount"
   c_umount :: Ptr CChar -> IO CInt
@@ -143,7 +142,7 @@ noData :: DriverData
 noData = empty
 
 combineBitMasks :: [MountFlag] -> CULong
-combineBitMasks = foldl (.|.) 0 . map (fromMountFlag)
+combineBitMasks = foldl (.|.) 0 . map fromMountFlag
 
 -- | A filesystem independent option to be used when unmounting a
 -- filesystem.
