@@ -1,6 +1,19 @@
 {-# LANGUAGE ForeignFunctionInterface #-}
 
--- | This module provides an interface to the system mount and umount functions.
+--------------------------------------------------------------------------------
+-- |
+-- Module      :  $Header$
+-- Copyright   :  © 2013-2014 Nicola Squartini
+-- License     :  BSD3
+--
+-- Maintainer  :  Nicola Squartini <tensor5@gmail.com>
+-- Stability   :  experimental
+-- Portability :  portable
+--
+-- This module provides an interface to the system mount and umount functions.
+--
+--------------------------------------------------------------------------------
+
 module System.Linux.Mount
     ( -- * Bindings to system functions
       mount
