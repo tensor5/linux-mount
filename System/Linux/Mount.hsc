@@ -116,31 +116,31 @@ data MountFlag = Rdonly
                  deriving (Eq, Read, Show)
 
 fromMountFlag :: MountFlag -> CULong
-fromMountFlag Rdonly      = fromIntegral msRdonly
-fromMountFlag Nosuid      = fromIntegral msNosuid
-fromMountFlag Nodev       = fromIntegral msNodev
-fromMountFlag Noexec      = fromIntegral msNoexec
-fromMountFlag Synchronous = fromIntegral msSynchronous
-fromMountFlag Remount     = fromIntegral msRemount
-fromMountFlag Mandlock    = fromIntegral msMandlock
-fromMountFlag Dirsync     = fromIntegral msDirsync
-fromMountFlag Noatime     = fromIntegral msNoatime
-fromMountFlag Nodiratime  = fromIntegral msNodiratime
-fromMountFlag Bind        = fromIntegral msBind
-fromMountFlag Move        = fromIntegral msMove
-fromMountFlag Rec         = fromIntegral msRec
-fromMountFlag Silent      = fromIntegral msSilent
-fromMountFlag Posixacl    = fromIntegral msPosixacl
-fromMountFlag Unbindable  = fromIntegral msUnbindable
-fromMountFlag Private     = fromIntegral msPrivate
-fromMountFlag Slave       = fromIntegral msSlave
-fromMountFlag Shared      = fromIntegral msShared
-fromMountFlag Relatime    = fromIntegral msRelatime
-fromMountFlag Kernmount   = fromIntegral msKernmount
-fromMountFlag IVersion    = fromIntegral msIVersion
-fromMountFlag Strictatime = fromIntegral msStrictatime
-fromMountFlag Active      = fromIntegral msActive
-fromMountFlag Nouser      = fromIntegral msNouser
+fromMountFlag Rdonly      = msRdonly
+fromMountFlag Nosuid      = msNosuid
+fromMountFlag Nodev       = msNodev
+fromMountFlag Noexec      = msNoexec
+fromMountFlag Synchronous = msSynchronous
+fromMountFlag Remount     = msRemount
+fromMountFlag Mandlock    = msMandlock
+fromMountFlag Dirsync     = msDirsync
+fromMountFlag Noatime     = msNoatime
+fromMountFlag Nodiratime  = msNodiratime
+fromMountFlag Bind        = msBind
+fromMountFlag Move        = msMove
+fromMountFlag Rec         = msRec
+fromMountFlag Silent      = msSilent
+fromMountFlag Posixacl    = msPosixacl
+fromMountFlag Unbindable  = msUnbindable
+fromMountFlag Private     = msPrivate
+fromMountFlag Slave       = msSlave
+fromMountFlag Shared      = msShared
+fromMountFlag Relatime    = msRelatime
+fromMountFlag Kernmount   = msKernmount
+fromMountFlag IVersion    = msIVersion
+fromMountFlag Strictatime = msStrictatime
+fromMountFlag Active      = msActive
+fromMountFlag Nouser      = msNouser
 
 -- | Filesystem dependent options to be used when mounting a filesystem; the
 -- content of @'DriverData'@ is passed directly to the filesystem driver.
