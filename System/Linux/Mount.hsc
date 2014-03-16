@@ -34,7 +34,6 @@ module System.Linux.Mount
 
 #include <sys/mount.h>
 
-import Data.Bits
 import Data.ByteString (ByteString, useAsCString, empty)
 import Foreign
 import Foreign.C
