@@ -7,13 +7,23 @@ License-File:   LICENSE
 Copyright:      © 2013-2014 Nicola Squartini
 Author:         Nicola Squartini
 Maintainer:     Nicola Squartini <tensor5@gmail.com>
-Bug-Reports:    mailto:tensor5@gmail.com
+Homepage:       https://github.com/tensor5/linux-mount
+Bug-Reports:    https://github.com/tensor5/linux-mount/issues
 Synopsis:       Mount and unmount filesystems
 Category:       System
 Description:
 
   This module provides an interface to the system mount and umount
   functions.
+
+Source-Repository head
+  Type:      git
+  Location:  git://github.com/tensor5/linux-mount.git
+
+Source-Repository this
+  Type:      git
+  Location:  git://github.com/tensor5/linux-mount.git
+  Tag:       v0.1.0.2
 
 Library
   Build-Depends:    base ==4.*,
