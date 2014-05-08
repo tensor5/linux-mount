@@ -1,6 +1,6 @@
 Name:           linux-mount
 Version:        0.1.0.2
-Cabal-Version:  >= 1.8
+Cabal-Version:  >= 1.10
 Build-Type:     Simple
 License:        BSD3
 License-File:   LICENSE
@@ -30,7 +30,8 @@ Source-Repository this
   Tag:       v0.1.0.2
 
 Library
-  Build-Depends:    base ==4.*,
-                    bytestring
-  Ghc-Options:      -Wall
-  Exposed-Modules:  System.Linux.Mount
+  Default-Language:  Haskell2010
+  Build-Depends:     base ==4.*,
+                     bytestring
+  Ghc-Options:       -Wall
+  Exposed-Modules:   System.Linux.Mount
