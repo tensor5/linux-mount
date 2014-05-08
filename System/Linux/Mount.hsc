@@ -56,7 +56,7 @@ mount dev dir typ xs byt =
                                      (castPtr cdat)
 
 foreign import ccall unsafe "mount"
-  c_mount :: Ptr CChar -> Ptr CChar -> Ptr CChar -> CULong -> Ptr a -> IO CInt
+  c_mount :: CString -> CString -> CString -> CULong -> Ptr a -> IO CInt
 
 -- | Unmount a filesystem (call to @umount()@).
 umount :: FilePath -- ^ Mount point
@@ -64,7 +64,7 @@ umount :: FilePath -- ^ Mount point
 umount str = throwErrnoIfMinus1_ "umount" (withCString str c_umount)
 
 foreign import ccall unsafe "umount"
-  c_umount :: Ptr CChar -> IO CInt
+  c_umount :: CString -> IO CInt
 
 -- | Unmount a filesystem using specific unmount options (call to @umount2()@).
 -- See @'UmountFlag'@ for details.
@@ -83,7 +83,7 @@ umountWith flag b str =
 
 
 foreign import ccall unsafe "umount2"
-  c_umount2 :: Ptr CChar -> CInt -> IO CInt
+  c_umount2 :: CString -> CInt -> IO CInt
 
 -- | A filesystem independent option to be used when mounting a filesystem.
 data MountFlag = Rdonly
