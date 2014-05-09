@@ -113,32 +113,32 @@ data MountFlag = Rdonly
                | Nouser
                  deriving (Eq, Read, Show)
 
-fromMountFlag :: MountFlag -> CULong
-fromMountFlag Rdonly      = msRdonly
-fromMountFlag Nosuid      = msNosuid
-fromMountFlag Nodev       = msNodev
-fromMountFlag Noexec      = msNoexec
-fromMountFlag Synchronous = msSynchronous
-fromMountFlag Remount     = msRemount
-fromMountFlag Mandlock    = msMandlock
-fromMountFlag Dirsync     = msDirsync
-fromMountFlag Noatime     = msNoatime
-fromMountFlag Nodiratime  = msNodiratime
-fromMountFlag Bind        = msBind
-fromMountFlag Move        = msMove
-fromMountFlag Rec         = msRec
-fromMountFlag Silent      = msSilent
-fromMountFlag Posixacl    = msPosixacl
-fromMountFlag Unbindable  = msUnbindable
-fromMountFlag Private     = msPrivate
-fromMountFlag Slave       = msSlave
-fromMountFlag Shared      = msShared
-fromMountFlag Relatime    = msRelatime
-fromMountFlag Kernmount   = msKernmount
-fromMountFlag IVersion    = msIVersion
-fromMountFlag Strictatime = msStrictatime
-fromMountFlag Active      = msActive
-fromMountFlag Nouser      = msNouser
+fromMountFlag :: MountFlag -> CUInt
+fromMountFlag Rdonly      = #{const MS_RDONLY}
+fromMountFlag Nosuid      = #{const MS_NOSUID}
+fromMountFlag Nodev       = #{const MS_NODEV}
+fromMountFlag Noexec      = #{const MS_NOEXEC}
+fromMountFlag Synchronous = #{const MS_SYNCHRONOUS}
+fromMountFlag Remount     = #{const MS_REMOUNT}
+fromMountFlag Mandlock    = #{const MS_MANDLOCK}
+fromMountFlag Dirsync     = #{const MS_DIRSYNC}
+fromMountFlag Noatime     = #{const MS_NOATIME}
+fromMountFlag Nodiratime  = #{const MS_NODIRATIME}
+fromMountFlag Bind        = #{const MS_BIND}
+fromMountFlag Move        = #{const MS_MOVE}
+fromMountFlag Rec         = #{const MS_REC}
+fromMountFlag Silent      = #{const MS_SILENT}
+fromMountFlag Posixacl    = #{const MS_POSIXACL}
+fromMountFlag Unbindable  = #{const MS_UNBINDABLE}
+fromMountFlag Private     = #{const MS_PRIVATE}
+fromMountFlag Slave       = #{const MS_SLAVE}
+fromMountFlag Shared      = #{const MS_SHARED}
+fromMountFlag Relatime    = #{const MS_RELATIME}
+fromMountFlag Kernmount   = #{const MS_KERNMOUNT}
+fromMountFlag IVersion    = #{const MS_I_VERSION}
+fromMountFlag Strictatime = #{const MS_STRICTATIME}
+fromMountFlag Active      = #{const MS_ACTIVE}
+fromMountFlag Nouser      = #{const MS_NOUSER}
 
 -- | Filesystem dependent options to be used when mounting a filesystem; the
 -- content of @'DriverData'@ is passed directly to the filesystem driver.
@@ -149,7 +149,7 @@ noData :: DriverData
 noData = empty
 
 combineBitMasks :: [MountFlag] -> CULong
-combineBitMasks = foldl (.|.) 0 . map fromMountFlag
+combineBitMasks = fromIntegral . foldl (.|.) 0 . map fromMountFlag
 
 -- | A filesystem independent option to be used when unmounting a filesystem.
 data UmountFlag = Plain  -- ^ Plain unmount, behaves like @'umount'@.
@@ -172,5 +172,3 @@ fromUmountFlag Plain  = 0
 fromUmountFlag Force  = #{const MNT_FORCE}
 fromUmountFlag Detach = #{const MNT_DETACH}
 fromUmountFlag Expire = #{const MNT_EXPIRE}
-
-#enum CULong, , MS_RDONLY, MS_NOSUID, MS_NODEV, MS_NOEXEC, MS_SYNCHRONOUS, MS_REMOUNT, MS_MANDLOCK, MS_DIRSYNC, MS_NOATIME, MS_NODIRATIME, MS_BIND, MS_MOVE, MS_REC, MS_SILENT, MS_POSIXACL, MS_UNBINDABLE, MS_PRIVATE, MS_SLAVE, MS_SHARED, MS_RELATIME, MS_KERNMOUNT, MS_I_VERSION, MS_STRICTATIME, MS_ACTIVE, MS_NOUSER
