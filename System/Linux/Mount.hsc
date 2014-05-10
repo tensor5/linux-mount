@@ -33,9 +33,9 @@ module System.Linux.Mount
 
 #include <sys/mount.h>
 
-import Data.ByteString (ByteString, useAsCString, empty)
-import Foreign
-import Foreign.C
+import           Data.ByteString (ByteString, empty, useAsCString)
+import           Foreign
+import           Foreign.C
 
 -- | Mount a filesystem (call to @mount()@).
 mount :: String      -- ^ Device file
