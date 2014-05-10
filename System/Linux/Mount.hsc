@@ -27,6 +27,7 @@ module System.Linux.Mount
 
     -- * Unmount flags
     , UmountFlag(..)
+    , SymLink(..)
 
     ) where
 
@@ -69,18 +70,13 @@ foreign import ccall unsafe "umount"
 -- | Unmount a filesystem using specific unmount options (call to @umount2()@).
 -- See @'UmountFlag'@ for details.
 umountWith :: UmountFlag -- ^ Unmount option
-           -> Bool       -- ^ @'True'@ follow symbolic links, @'False'@ do not
-                         -- follow
+           -> SymLink    -- ^ @'Follow'@ or @'NoFollow'@ symbolic links
            -> FilePath   -- ^ Mount point
            -> IO ()
-umountWith flag b str =
+umountWith flag sym str =
     throwErrnoIfMinus1_ "umountWith" $
     withCString str $ \cstr ->
-        c_umount2 cstr (fromUmountFlag flag .|.
-                        (if b then 0 else #{const UMOUNT_NOFOLLOW})
-                       )
-
-
+        c_umount2 cstr (fromUmountFlag flag .|. fromSymLink sym)
 
 foreign import ccall unsafe "umount2"
   c_umount2 :: CString -> CInt -> IO CInt
@@ -172,3 +168,12 @@ fromUmountFlag Plain  = 0
 fromUmountFlag Force  = #{const MNT_FORCE}
 fromUmountFlag Detach = #{const MNT_DETACH}
 fromUmountFlag Expire = #{const MNT_EXPIRE}
+
+-- | Whether to follow symbolic links on umount.
+data SymLink = Follow
+             | NoFollow
+               deriving (Eq, Read, Show)
+
+fromSymLink :: SymLink -> CInt
+fromSymLink Follow   = 0
+fromSymLink NoFollow = #{const UMOUNT_NOFOLLOW}
