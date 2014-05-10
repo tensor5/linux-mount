@@ -1,5 +1,5 @@
 Name:           linux-mount
-Version:        0.1.0.2
+Version:        0.2.0.0
 Cabal-Version:  >= 1.10
 Build-Type:     Simple
 License:        BSD3
@@ -27,7 +27,7 @@ Source-Repository head
 Source-Repository this
   Type:      git
   Location:  git://github.com/tensor5/linux-mount.git
-  Tag:       v0.1.0.2
+  Tag:       v0.2.0.0
 
 Library
   Default-Language:  Haskell2010
