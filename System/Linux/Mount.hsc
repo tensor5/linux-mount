@@ -46,7 +46,7 @@ mount :: String      -- ^ Device file
       -> IO ()
 mount dev dir typ xs byt =
     throwErrnoIfMinus1_ "mount" $
-    withCString dev $ \cdev ->
+    withCStringOrNull dev $ \cdev ->
         withCString dir $ \cdir ->
             withCString typ $ \ctyp ->
                 useAsCString byt $ \cdat->
@@ -55,6 +55,10 @@ mount dev dir typ xs byt =
                                      ctyp
                                      (combineBitMasks xs)
                                      (castPtr cdat)
+
+withCStringOrNull :: String -> (CString -> IO a) -> IO a
+withCStringOrNull []  f = f nullPtr
+withCStringOrNull str f = withCString str f
 
 foreign import ccall unsafe "mount"
   c_mount :: CString -> CString -> CString -> CULong -> Ptr a -> IO CInt
