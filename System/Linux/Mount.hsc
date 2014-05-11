@@ -102,11 +102,8 @@ data MountFlag = Rdonly
                | Slave
                | Shared
                | Relatime
-               | Kernmount
                | IVersion
                | Strictatime
-               | Active
-               | Nouser
                  deriving (Eq, Read, Show)
 
 fromMountFlag :: MountFlag -> CUInt
@@ -130,11 +127,8 @@ fromMountFlag Private     = #{const MS_PRIVATE}
 fromMountFlag Slave       = #{const MS_SLAVE}
 fromMountFlag Shared      = #{const MS_SHARED}
 fromMountFlag Relatime    = #{const MS_RELATIME}
-fromMountFlag Kernmount   = #{const MS_KERNMOUNT}
 fromMountFlag IVersion    = #{const MS_I_VERSION}
 fromMountFlag Strictatime = #{const MS_STRICTATIME}
-fromMountFlag Active      = #{const MS_ACTIVE}
-fromMountFlag Nouser      = #{const MS_NOUSER}
 
 -- | Filesystem dependent options to be used when mounting a filesystem; the
 -- content of @'DriverData'@ is passed directly to the filesystem driver.
