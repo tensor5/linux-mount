@@ -86,28 +86,42 @@ foreign import ccall unsafe "umount2"
   c_umount2 :: CString -> CInt -> IO CInt
 
 -- | A filesystem independent option to be used when mounting a filesystem.
-data MountFlag = ReadOnly
-               | NoSUID
-               | NoDev
-               | NoExec
-               | Synchronous
-               | Remount
-               | MandLock
-               | DirSync
-               | NoATime
-               | NoDirATime
-               | Bind
-               | Move
-               | Recursive
-               | Silent
-               | PosixACL
-               | Unbindable
-               | Private
-               | Slave
-               | Shared
-               | RelATime
-               | IVersion
-               | StrictATime
+data MountFlag = ReadOnly     -- ^ Mount read-only (@MS_RDONLY@).
+               | NoSUID       -- ^ Ignore suid and sgid bits (@MS_NOSUID@).
+               | NoDev        -- ^ Disallow access to device special files
+                              -- (@MS_NODEV@).
+               | NoExec       -- ^ Disallow program execution (@MS_NOEXEC@).
+               | Synchronous  -- ^ Writes are synced at once (@MS_SYNCHRONOUS@).
+               | Remount      -- ^ Alter flags of a mounted filesystem
+                              -- (@MS_REMOUNT@).
+               | MandLock     -- ^ Allow mandatory locks on a filesystem
+                              -- (@MS_MANDLOCK@).
+               | DirSync      -- ^ Directory modifications are synchronous
+                              -- (@MS_DIRSYNC@).
+               | NoATime      -- ^ Do not update access times (@MS_NOATIME@).
+               | NoDirATime   -- ^ Do not update directory access times
+                              -- (@MS_NODIRATIME@).
+               | Bind         -- ^ Bind directory at different place
+                              -- (@MS_BIND@).
+               | Move         -- ^ Atomically move a mounted filesystem to
+                              -- another mount point (@MS_MOVE@).
+               | Recursive    -- ^ If used together with @'Bind'@, recursively
+                              -- bind a directory subtree. If used with one of
+                              -- @'Unbindable'@, @'Private'@, @'Slave'@ or
+                              -- @'Shared'@, recursively change the
+                              -- corresponding flag (@MS_REC@).
+               | Silent       -- ^ Silent mount (@MS_SILENT@).
+               | PosixACL     -- ^ VFS does not apply the umask (@MS_POSIXACL@).
+               | Unbindable   -- ^ Change to unbindable (@MS_UNBINDABLE@).
+               | Private      -- ^ Change to private (@MS_PRIVATE@).
+               | Slave        -- ^ Change to slave (@MS_SLAVE@).
+               | Shared       -- ^ Change to shared (@MS_SHARED@).
+               | RelATime     -- ^ Update atime relative to mtime/ctime
+                              -- (@MS_RELATIME@).
+               | IVersion     -- ^ Update inode I_version field
+                              -- (@MS_I_VERSION@).
+               | StrictATime  -- ^ Always perform atime updates
+                              -- (@MS_STRICTATIME@).
                  deriving (Eq, Read, Show)
 
 fromMountFlag :: MountFlag -> CUInt
