@@ -86,53 +86,53 @@ foreign import ccall unsafe "umount2"
   c_umount2 :: CString -> CInt -> IO CInt
 
 -- | A filesystem independent option to be used when mounting a filesystem.
-data MountFlag = Rdonly
-               | Nosuid
-               | Nodev
-               | Noexec
+data MountFlag = ReadOnly
+               | NoSUID
+               | NoDev
+               | NoExec
                | Synchronous
                | Remount
-               | Mandlock
-               | Dirsync
-               | Noatime
-               | Nodiratime
+               | MandLock
+               | DirSync
+               | NoATime
+               | NoDirATime
                | Bind
                | Move
-               | Rec
+               | Recursive
                | Silent
-               | Posixacl
+               | PosixACL
                | Unbindable
                | Private
                | Slave
                | Shared
-               | Relatime
+               | RelATime
                | IVersion
-               | Strictatime
+               | StrictATime
                  deriving (Eq, Read, Show)
 
 fromMountFlag :: MountFlag -> CUInt
-fromMountFlag Rdonly      = #{const MS_RDONLY}
-fromMountFlag Nosuid      = #{const MS_NOSUID}
-fromMountFlag Nodev       = #{const MS_NODEV}
-fromMountFlag Noexec      = #{const MS_NOEXEC}
+fromMountFlag ReadOnly    = #{const MS_RDONLY}
+fromMountFlag NoSUID      = #{const MS_NOSUID}
+fromMountFlag NoDev       = #{const MS_NODEV}
+fromMountFlag NoExec      = #{const MS_NOEXEC}
 fromMountFlag Synchronous = #{const MS_SYNCHRONOUS}
 fromMountFlag Remount     = #{const MS_REMOUNT}
-fromMountFlag Mandlock    = #{const MS_MANDLOCK}
-fromMountFlag Dirsync     = #{const MS_DIRSYNC}
-fromMountFlag Noatime     = #{const MS_NOATIME}
-fromMountFlag Nodiratime  = #{const MS_NODIRATIME}
+fromMountFlag MandLock    = #{const MS_MANDLOCK}
+fromMountFlag DirSync     = #{const MS_DIRSYNC}
+fromMountFlag NoATime     = #{const MS_NOATIME}
+fromMountFlag NoDirATime  = #{const MS_NODIRATIME}
 fromMountFlag Bind        = #{const MS_BIND}
 fromMountFlag Move        = #{const MS_MOVE}
-fromMountFlag Rec         = #{const MS_REC}
+fromMountFlag Recursive   = #{const MS_REC}
 fromMountFlag Silent      = #{const MS_SILENT}
-fromMountFlag Posixacl    = #{const MS_POSIXACL}
+fromMountFlag PosixACL    = #{const MS_POSIXACL}
 fromMountFlag Unbindable  = #{const MS_UNBINDABLE}
 fromMountFlag Private     = #{const MS_PRIVATE}
 fromMountFlag Slave       = #{const MS_SLAVE}
 fromMountFlag Shared      = #{const MS_SHARED}
-fromMountFlag Relatime    = #{const MS_RELATIME}
+fromMountFlag RelATime    = #{const MS_RELATIME}
 fromMountFlag IVersion    = #{const MS_I_VERSION}
-fromMountFlag Strictatime = #{const MS_STRICTATIME}
+fromMountFlag StrictATime = #{const MS_STRICTATIME}
 
 -- | Filesystem dependent options to be used when mounting a filesystem; the
 -- content of @'DriverData'@ is passed directly to the filesystem driver.
