@@ -15,6 +15,14 @@
 module System.Linux.Mount
     ( -- * Bindings to system functions
       mount
+    , remount
+    , bind
+    , rebind
+    , makeShared, makeRShared
+    , makeSlave, makeRSlave
+    , makePrivate, makeRPrivate
+    , makeUnbindable, makeRUnbindable
+    , move
     , umount
     , umountWith
 
@@ -60,6 +68,100 @@ withCStringOrNull :: String -> (CString -> IO a) -> IO a
 withCStringOrNull []  f = f nullPtr
 withCStringOrNull str f = withCString str f
 
+-- | Alter flags of a mounted filesystem (call to @mount()@ with @MS_REMOUNT@).
+remount :: FilePath    -- ^ Mount point
+        -> [MountFlag] -- ^ List of mount options
+        -> DriverData  -- ^ Driver specific options
+        -> IO ()
+remount dir xs byt =
+    throwErrnoIfMinus1_ "mount" $
+    withCString dir $ \cdir ->
+        useAsCString byt $ \cdat->
+                     c_mount nullPtr
+                             cdir
+                             nullPtr
+                             (combineBitMasks xs .|. #{const MS_REMOUNT})
+                             (castPtr cdat)
+
+-- | Bind directory at different place (call to @mount()@ with @MS_BIND@).
+bind :: FilePath  -- ^ Source mount point
+     -> FilePath  -- ^ Target mount point
+     -> IO ()
+bind = mountSrcDest #{const MS_BIND}
+
+-- | Atomically move a mounted filesystem to another mount point (call to
+-- @mount()@ with @MS_MOVE@).
+move :: FilePath  -- ^ Old mount point
+     -> FilePath  -- ^ New mount point
+     -> IO ()
+move = mountSrcDest #{const MS_MOVE}
+
+mountSrcDest :: CUInt -> FilePath -> FilePath -> IO ()
+mountSrcDest flag src dest =
+    throwErrnoIfMinus1_ "mount" $
+    withCString src $ \csrc ->
+        withCString dest $ \cdest ->
+            c_mount csrc cdest nullPtr (fromIntegral flag) nullPtr
+
+-- | Alter flags of a bound filesystem (call to @mount()@ with @MS_REMOUNT@ and
+-- @MS_BIND@).
+rebind :: FilePath     -- ^ Source mount point
+       -> [MountFlag]  -- ^ List of mount options
+       -> IO ()
+rebind dir flags =
+    make (#{const MS_REMOUNT} .|. #{const MS_BIND}
+          .|. fromIntegral (combineBitMasks flags)) dir
+
+-- | Set the @MS_SHARED@ propagation flag on a mounted filesystem.
+makeShared :: FilePath  -- ^ Mount point
+           -> IO ()
+makeShared = make #{const MS_SHARED}
+
+-- | Set the @MS_SHARED@ propagation flag on a mounted filesystem and
+-- recursively on all submounts.
+makeRShared :: FilePath  -- ^ Mount point
+            -> IO ()
+makeRShared = make (#{const MS_SHARED} .|. #{const MS_REC})
+
+-- | Set the @MS_SLAVE@ propagation flag on a mounted filesystem.
+makeSlave :: FilePath  -- ^ Mount point
+          -> IO ()
+makeSlave = make #{const MS_SLAVE}
+
+-- | Set the @MS_SLAVE@ propagation flag on a mounted filesystem recursively on
+-- all submounts.
+makeRSlave :: FilePath  -- ^ Mount point
+           -> IO ()
+makeRSlave = make (#{const MS_SLAVE} .|. #{const MS_REC})
+
+-- | Set the @MS_PRIVATE@ propagation flag on a mounted filesystem.
+makePrivate :: FilePath  -- ^ Mount point
+            -> IO ()
+makePrivate = make #{const MS_PRIVATE}
+
+-- | Set the @MS_PRIVATE@ propagation flag on a mounted filesystem and
+-- recursively on all submounts.
+makeRPrivate :: FilePath  -- ^ Mount point
+             -> IO ()
+makeRPrivate = make (#{const MS_PRIVATE} .|. #{const MS_REC})
+
+-- | Set the @MS_UNBINDABLE@ propagation flag on a mounted filesystem.
+makeUnbindable :: FilePath  -- ^ Mount point
+               -> IO ()
+makeUnbindable = make #{const MS_UNBINDABLE}
+
+-- | Set the @MS_UNBINDABLE@ propagation flag on a mounted filesystem and
+-- recursively on all submounts.
+makeRUnbindable :: FilePath  -- ^ Mount point
+                -> IO ()
+makeRUnbindable = make (#{const MS_UNBINDABLE} .|. #{const MS_REC})
+
+make :: CUInt -> FilePath -> IO ()
+make flag dir =
+    throwErrnoIfMinus1_ "mount" $
+    withCString dir $ \cdir ->
+        c_mount nullPtr cdir nullPtr (fromIntegral flag) nullPtr
+
 foreign import ccall unsafe "mount"
   c_mount :: CString -> CString -> CString -> CULong -> Ptr a -> IO CInt
 
@@ -92,8 +194,6 @@ data MountFlag = ReadOnly     -- ^ Mount read-only (@MS_RDONLY@).
                               -- (@MS_NODEV@).
                | NoExec       -- ^ Disallow program execution (@MS_NOEXEC@).
                | Synchronous  -- ^ Writes are synced at once (@MS_SYNCHRONOUS@).
-               | Remount      -- ^ Alter flags of a mounted filesystem
-                              -- (@MS_REMOUNT@).
                | MandLock     -- ^ Allow mandatory locks on a filesystem
                               -- (@MS_MANDLOCK@).
                | DirSync      -- ^ Directory modifications are synchronous
@@ -101,21 +201,8 @@ data MountFlag = ReadOnly     -- ^ Mount read-only (@MS_RDONLY@).
                | NoATime      -- ^ Do not update access times (@MS_NOATIME@).
                | NoDirATime   -- ^ Do not update directory access times
                               -- (@MS_NODIRATIME@).
-               | Bind         -- ^ Bind directory at different place
-                              -- (@MS_BIND@).
-               | Move         -- ^ Atomically move a mounted filesystem to
-                              -- another mount point (@MS_MOVE@).
-               | Recursive    -- ^ If used together with @'Bind'@, recursively
-                              -- bind a directory subtree. If used with one of
-                              -- @'Unbindable'@, @'Private'@, @'Slave'@ or
-                              -- @'Shared'@, recursively change the
-                              -- corresponding flag (@MS_REC@).
                | Silent       -- ^ Silent mount (@MS_SILENT@).
                | PosixACL     -- ^ VFS does not apply the umask (@MS_POSIXACL@).
-               | Unbindable   -- ^ Change to unbindable (@MS_UNBINDABLE@).
-               | Private      -- ^ Change to private (@MS_PRIVATE@).
-               | Slave        -- ^ Change to slave (@MS_SLAVE@).
-               | Shared       -- ^ Change to shared (@MS_SHARED@).
                | RelATime     -- ^ Update atime relative to mtime/ctime
                               -- (@MS_RELATIME@).
                | IVersion     -- ^ Update inode I_version field
@@ -130,20 +217,12 @@ fromMountFlag NoSUID      = #{const MS_NOSUID}
 fromMountFlag NoDev       = #{const MS_NODEV}
 fromMountFlag NoExec      = #{const MS_NOEXEC}
 fromMountFlag Synchronous = #{const MS_SYNCHRONOUS}
-fromMountFlag Remount     = #{const MS_REMOUNT}
 fromMountFlag MandLock    = #{const MS_MANDLOCK}
 fromMountFlag DirSync     = #{const MS_DIRSYNC}
 fromMountFlag NoATime     = #{const MS_NOATIME}
 fromMountFlag NoDirATime  = #{const MS_NODIRATIME}
-fromMountFlag Bind        = #{const MS_BIND}
-fromMountFlag Move        = #{const MS_MOVE}
-fromMountFlag Recursive   = #{const MS_REC}
 fromMountFlag Silent      = #{const MS_SILENT}
 fromMountFlag PosixACL    = #{const MS_POSIXACL}
-fromMountFlag Unbindable  = #{const MS_UNBINDABLE}
-fromMountFlag Private     = #{const MS_PRIVATE}
-fromMountFlag Slave       = #{const MS_SLAVE}
-fromMountFlag Shared      = #{const MS_SHARED}
 fromMountFlag RelATime    = #{const MS_RELATIME}
 fromMountFlag IVersion    = #{const MS_I_VERSION}
 fromMountFlag StrictATime = #{const MS_STRICTATIME}
