@@ -13,27 +13,38 @@
 --------------------------------------------------------------------------------
 
 module System.Linux.Mount
-    ( -- * Bindings to system functions
+    ( -- * Mount a filesystem
       mount
     , remount
+
+    -- ** Mount flags
+    , MountFlag(..)
+    , DriverData
+    , noData
+
+    -- * Bind a filesystem
     , bind
     , rebind
+
+    -- * Change propagation flags
+
+    -- | These functions change the propagation flag of an already mounted
+    -- filesystem, as explained in
+    -- <https://www.kernel.org/doc/Documentation/filesystems/sharedsubtree.txt>.
+    -- They all take the mount point as argument.
     , makeShared, makeRShared
     , makeSlave, makeRSlave
     , makePrivate, makeRPrivate
     , makeUnbindable, makeRUnbindable
+
+    -- * Move a filesystem
     , move
+
+    -- * Unmount a filesystem
     , umount
     , umountWith
 
-    -- * Mount flags
-    , MountFlag(..)
-
-    -- * Driver data
-    , DriverData
-    , noData
-
-    -- * Unmount flags
+    -- ** Unmount flags
     , UmountFlag(..)
     , SymLink(..)
 
@@ -105,7 +116,7 @@ mountSrcDest flag src dest =
 
 -- | Alter flags of a bound filesystem (call to @mount()@ with @MS_REMOUNT@ and
 -- @MS_BIND@).
-rebind :: FilePath     -- ^ Source mount point
+rebind :: FilePath     -- ^ Mount point
        -> [MountFlag]  -- ^ List of mount options
        -> IO ()
 rebind dir flags =
@@ -113,47 +124,39 @@ rebind dir flags =
           .|. fromIntegral (combineBitMasks flags)) dir
 
 -- | Set the @MS_SHARED@ propagation flag on a mounted filesystem.
-makeShared :: FilePath  -- ^ Mount point
-           -> IO ()
+makeShared :: FilePath -> IO ()
 makeShared = make #{const MS_SHARED}
 
 -- | Set the @MS_SHARED@ propagation flag on a mounted filesystem and
 -- recursively on all submounts.
-makeRShared :: FilePath  -- ^ Mount point
-            -> IO ()
+makeRShared :: FilePath -> IO ()
 makeRShared = make (#{const MS_SHARED} .|. #{const MS_REC})
 
 -- | Set the @MS_SLAVE@ propagation flag on a mounted filesystem.
-makeSlave :: FilePath  -- ^ Mount point
-          -> IO ()
+makeSlave :: FilePath -> IO ()
 makeSlave = make #{const MS_SLAVE}
 
 -- | Set the @MS_SLAVE@ propagation flag on a mounted filesystem recursively on
 -- all submounts.
-makeRSlave :: FilePath  -- ^ Mount point
-           -> IO ()
+makeRSlave :: FilePath -> IO ()
 makeRSlave = make (#{const MS_SLAVE} .|. #{const MS_REC})
 
 -- | Set the @MS_PRIVATE@ propagation flag on a mounted filesystem.
-makePrivate :: FilePath  -- ^ Mount point
-            -> IO ()
+makePrivate :: FilePath -> IO ()
 makePrivate = make #{const MS_PRIVATE}
 
 -- | Set the @MS_PRIVATE@ propagation flag on a mounted filesystem and
 -- recursively on all submounts.
-makeRPrivate :: FilePath  -- ^ Mount point
-             -> IO ()
+makeRPrivate :: FilePath -> IO ()
 makeRPrivate = make (#{const MS_PRIVATE} .|. #{const MS_REC})
 
 -- | Set the @MS_UNBINDABLE@ propagation flag on a mounted filesystem.
-makeUnbindable :: FilePath  -- ^ Mount point
-               -> IO ()
+makeUnbindable :: FilePath -> IO ()
 makeUnbindable = make #{const MS_UNBINDABLE}
 
 -- | Set the @MS_UNBINDABLE@ propagation flag on a mounted filesystem and
 -- recursively on all submounts.
-makeRUnbindable :: FilePath  -- ^ Mount point
-                -> IO ()
+makeRUnbindable :: FilePath -> IO ()
 makeRUnbindable = make (#{const MS_UNBINDABLE} .|. #{const MS_REC})
 
 make :: CUInt -> FilePath -> IO ()
