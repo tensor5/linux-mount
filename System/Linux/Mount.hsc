@@ -23,7 +23,7 @@ module System.Linux.Mount
     , noData
 
     -- * Bind a filesystem
-    , bind
+    , bind, rBind
     , rebind
 
     -- * Change propagation flags
@@ -94,11 +94,19 @@ remount dir xs byt =
                              (combineBitMasks xs .|. #{const MS_REMOUNT})
                              (castPtr cdat)
 
--- | Bind directory at different place (call to @mount()@ with @MS_BIND@).
+-- | Mount an already mounted filesystem under a new directory (call to
+-- @mount()@ with @MS_BIND@).
 bind :: FilePath  -- ^ Source mount point
      -> FilePath  -- ^ Target mount point
      -> IO ()
 bind = mountSrcDest #{const MS_BIND}
+
+-- | Mount an already mounted filesystem and all its submounts under a new
+-- directory (call to @mount()@ with @MS_BIND@ and @MS_REC@).
+rBind :: FilePath  -- ^ Source mount point
+      -> FilePath  -- ^ Target mount point
+      -> IO ()
+rBind = mountSrcDest (#{const MS_BIND} .|. #{const MS_REC})
 
 -- | Atomically move a mounted filesystem to another mount point (call to
 -- @mount()@ with @MS_MOVE@).
