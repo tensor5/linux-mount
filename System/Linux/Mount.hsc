@@ -53,6 +53,7 @@ module System.Linux.Mount
 #include <sys/mount.h>
 
 import           Data.ByteString (ByteString, empty, useAsCString)
+import qualified Data.ByteString as B
 import           Foreign
 import           Foreign.C
 
@@ -68,16 +69,20 @@ mount dev dir typ xs byt =
     withCStringOrNull dev $ \cdev ->
         withCString dir $ \cdir ->
             withCString typ $ \ctyp ->
-                useAsCString byt $ \cdat->
-                             c_mount cdev
-                                     cdir
-                                     ctyp
-                                     (combineBitMasks xs)
-                                     (castPtr cdat)
+                useAsCStringOrNull byt $ \cdat->
+                                   c_mount cdev
+                                           cdir
+                                           ctyp
+                                           (combineBitMasks xs)
+                                           (castPtr cdat)
 
 withCStringOrNull :: String -> (CString -> IO a) -> IO a
 withCStringOrNull []  f = f nullPtr
 withCStringOrNull str f = withCString str f
+
+useAsCStringOrNull :: ByteString -> (CString -> IO a) -> IO a
+useAsCStringOrNull str f | B.null str = f nullPtr
+useAsCStringOrNull str f              = useAsCString str f
 
 -- | Alter flags of a mounted filesystem (call to @mount()@ with @MS_REMOUNT@).
 remount :: FilePath    -- ^ Mount point
@@ -87,12 +92,12 @@ remount :: FilePath    -- ^ Mount point
 remount dir xs byt =
     throwErrnoIfMinus1_ "mount" $
     withCString dir $ \cdir ->
-        useAsCString byt $ \cdat->
-                     c_mount nullPtr
-                             cdir
-                             nullPtr
-                             (combineBitMasks xs .|. #{const MS_REMOUNT})
-                             (castPtr cdat)
+        useAsCStringOrNull byt $ \cdat->
+                           c_mount nullPtr
+                                   cdir
+                                   nullPtr
+                                   (combineBitMasks xs .|. #{const MS_REMOUNT})
+                                   (castPtr cdat)
 
 -- | Mount an already mounted filesystem under a new directory (call to
 -- @mount()@ with @MS_BIND@).
