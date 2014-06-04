@@ -30,8 +30,9 @@ Source-Repository this
   Tag:       v0.2.0.0
 
 Library
-  Default-Language:  Haskell2010
-  Build-Depends:     base ==4.*,
-                     bytestring
-  Ghc-Options:       -Wall
-  Exposed-Modules:   System.Linux.Mount
+  Default-Language:    Haskell2010
+  Default-Extensions:  Safe
+  Build-Depends:       base ==4.*,
+                       bytestring
+  Ghc-Options:         -Wall
+  Exposed-Modules:     System.Linux.Mount

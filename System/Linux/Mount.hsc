@@ -52,10 +52,11 @@ module System.Linux.Mount
 
 #include <sys/mount.h>
 
+import           Data.Bits       ((.|.))
 import           Data.ByteString (ByteString, empty, useAsCString)
 import qualified Data.ByteString as B
-import           Foreign
 import           Foreign.C
+import           Foreign.Ptr     (Ptr, castPtr, nullPtr)
 
 -- | Mount a filesystem (call to @mount()@).
 mount :: String      -- ^ Device file
