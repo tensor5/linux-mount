@@ -55,7 +55,8 @@ module System.Linux.Mount
 import           Data.Bits       ((.|.))
 import           Data.ByteString (ByteString, empty, useAsCString)
 import qualified Data.ByteString as B
-import           Foreign.C
+import           Foreign.C       (CInt (..), CString, CUInt, CULong (..),
+                                  throwErrnoIfMinus1_, withCString)
 import           Foreign.Ptr     (Ptr, castPtr, nullPtr)
 
 -- | Mount a filesystem (call to @mount()@).
