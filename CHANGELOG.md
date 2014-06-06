@@ -1,5 +1,11 @@
-Version 0.2.0.0
----------------
+Version 0.2.0.1 (2014-06-06)
+----------------------------
+
+- Use Safe Haskell extension.
+- Improve description and documentation.
+
+Version 0.2.0.0 (2014-05-24)
+----------------------------
 
 - New functions has been introduced to perform specific mount actions,
   previously performed with a combination of `mount` and the appropriate
@@ -27,8 +33,8 @@ Version 0.2.0.0
 - Improve documentation.
 - Minor code fixes.
 
-Version 0.1.0.2
----------------
+Version 0.1.0.2 (2014-03-16)
+----------------------------
 
 - Relicense under BSD3.
 - Clean up code.
