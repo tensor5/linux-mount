@@ -8,10 +8,11 @@
 -- Stability   :  experimental
 -- Portability :  portable
 --
--- This module provides an interface to the system mount and umount
--- functions. All functions below may fail with
--- @'System.IO.Error.isPermissionError'@ if the user does not have the required
--- privileges.
+-- @linux-mount@ provides bindings to the Linux
+-- @<http://man7.org/linux/man-pages/man2/mount.2.html mount()>@ and
+-- @<http://man7.org/linux/man-pages/man2/umount.2.html umount()>@ syscalls. All
+-- functions below may fail with @'System.IO.Error.isPermissionError'@ if the
+-- user does not have the required privileges.
 --
 --------------------------------------------------------------------------------
 

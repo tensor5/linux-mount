@@ -13,8 +13,9 @@ Synopsis:       Mount and unmount filesystems
 Category:       System
 Description:
 
-  This module provides an interface to the system mount and umount
-  functions.
+  Bindings to the Linux
+  @<http://man7.org/linux/man-pages/man2/mount.2.html mount()>@ and
+  @<http://man7.org/linux/man-pages/man2/umount.2.html umount()>@ syscalls.
 
 Extra-Source-Files:
   CHANGELOG.md
