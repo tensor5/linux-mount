@@ -59,7 +59,8 @@ import           Foreign.C       (CInt (..), CString, CUInt, CULong (..),
                                   throwErrnoIfMinus1_, withCString)
 import           Foreign.Ptr     (Ptr, castPtr, nullPtr)
 
--- | Mount a filesystem (call to @mount()@).
+-- | Mount a filesystem (call to
+-- @<http://man7.org/linux/man-pages/man2/mount.2.html mount()>@).
 mount :: String      -- ^ Device file
       -> FilePath    -- ^ Mount point
       -> String      -- ^ Filesystem type
@@ -86,7 +87,9 @@ useAsCStringOrNull :: ByteString -> (CString -> IO a) -> IO a
 useAsCStringOrNull str f | B.null str = f nullPtr
 useAsCStringOrNull str f              = useAsCString str f
 
--- | Alter flags of a mounted filesystem (call to @mount()@ with @MS_REMOUNT@).
+-- | Alter flags of a mounted filesystem (call to
+-- @<http://man7.org/linux/man-pages/man2/mount.2.html mount()>@ with
+-- @MS_REMOUNT@).
 remount :: FilePath    -- ^ Mount point
         -> [MountFlag] -- ^ List of mount options
         -> DriverData  -- ^ Driver specific options
@@ -102,21 +105,25 @@ remount dir xs byt =
                                    (castPtr cdat)
 
 -- | Mount an already mounted filesystem under a new directory (call to
--- @mount()@ with @MS_BIND@).
+-- @<http://man7.org/linux/man-pages/man2/mount.2.html mount()>@ with
+-- @MS_BIND@).
 bind :: FilePath  -- ^ Source mount point
      -> FilePath  -- ^ Target mount point
      -> IO ()
 bind = mountSrcDest #{const MS_BIND}
 
 -- | Mount an already mounted filesystem and all its submounts under a new
--- directory (call to @mount()@ with @MS_BIND@ and @MS_REC@).
+-- directory (call to
+-- @<http://man7.org/linux/man-pages/man2/mount.2.html mount()>@ with @MS_BIND@
+-- and @MS_REC@).
 rBind :: FilePath  -- ^ Source mount point
       -> FilePath  -- ^ Target mount point
       -> IO ()
 rBind = mountSrcDest (#{const MS_BIND} .|. #{const MS_REC})
 
 -- | Atomically move a mounted filesystem to another mount point (call to
--- @mount()@ with @MS_MOVE@).
+-- @<http://man7.org/linux/man-pages/man2/mount.2.html mount()>@ with
+-- @MS_MOVE@).
 move :: FilePath  -- ^ Old mount point
      -> FilePath  -- ^ New mount point
      -> IO ()
@@ -129,8 +136,9 @@ mountSrcDest flag src dest =
         withCString dest $ \cdest ->
             c_mount csrc cdest nullPtr (fromIntegral flag) nullPtr
 
--- | Alter flags of a bound filesystem (call to @mount()@ with @MS_REMOUNT@ and
--- @MS_BIND@).
+-- | Alter flags of a bound filesystem (call to
+-- @<http://man7.org/linux/man-pages/man2/mount.2.html mount()>@ with
+-- @MS_REMOUNT@ and @MS_BIND@).
 rebind :: FilePath     -- ^ Mount point
        -> [MountFlag]  -- ^ List of mount options
        -> IO ()
@@ -183,7 +191,8 @@ make flag dir =
 foreign import ccall unsafe "mount"
   c_mount :: CString -> CString -> CString -> CULong -> Ptr a -> IO CInt
 
--- | Unmount a filesystem (call to @umount()@).
+-- | Unmount a filesystem (call to
+-- @<http://man7.org/linux/man-pages/man2/umount.2.html umount()>@).
 umount :: FilePath -- ^ Mount point
        -> IO ()
 umount str = throwErrnoIfMinus1_ "umount" (withCString str c_umount)
@@ -191,8 +200,9 @@ umount str = throwErrnoIfMinus1_ "umount" (withCString str c_umount)
 foreign import ccall unsafe "umount"
   c_umount :: CString -> IO CInt
 
--- | Unmount a filesystem using specific unmount options (call to @umount2()@).
--- See @'UmountFlag'@ for details.
+-- | Unmount a filesystem using specific unmount options (call to
+-- @<http://man7.org/linux/man-pages/man2/umount.2.html umount2()>@).  See
+-- @'UmountFlag'@ for details.
 umountWith :: UmountFlag -- ^ Unmount option
            -> SymLink    -- ^ @'Follow'@ or @'NoFollow'@ symbolic links
            -> FilePath   -- ^ Mount point
