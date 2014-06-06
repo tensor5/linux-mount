@@ -8,7 +8,10 @@
 -- Stability   :  experimental
 -- Portability :  portable
 --
--- This module provides an interface to the system mount and umount functions.
+-- This module provides an interface to the system mount and umount
+-- functions. All functions below may fail with
+-- @'System.IO.Error.isPermissionError'@ if the user does not have the required
+-- privileges.
 --
 --------------------------------------------------------------------------------
 
@@ -275,11 +278,11 @@ data UmountFlag = Plain  -- ^ Plain unmount, behaves like @'umount'@.
                 | Expire -- ^ Mark the mount point as expired. If a mount point
                          -- is not currently in use, then an initial call to
                          -- @'umountWith'@ with this flag fails with the error
-                         -- @EAGAIN@, but marks the mount point as expired. The
-                         -- mount point remains expired as long as it isn't
-                         -- accessed by any process. A second @'umountWith'@
-                         -- call specifying @'Expire'@ unmounts an expired mount
-                         -- point.
+                         -- @'Foreign.C.Error.eAGAIN'@, but marks the mount
+                         -- point as expired. The mount point remains expired as
+                         -- long as it isn't accessed by any process. A second
+                         -- @'umountWith'@ call specifying @'Expire'@ unmounts
+                         -- an expired mount point.
                   deriving (Eq, Read, Show)
 
 fromUmountFlag :: UmountFlag -> CInt
